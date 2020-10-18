@@ -1,0 +1,21 @@
+thorntail:
+  port:
+    offset: 2
+  logging:
+    pattern-formatters:
+      LOG_FORMATTER:
+        pattern: "CUSTOM LOG FORMAT %p [%c] %s%e%n"
+    periodic-rotating-file-handlers:
+      FILE:
+        file:
+          path: /tmp/thorntail.log
+        suffix: .yyyy-MM-dd
+        named-formatter: LOG_FORMATTER
+    root-logger:
+      handlers:
+      - CONSOLE
+      - FILE
+test.myprop: abc
+test.myperson: '{"firstName":"Test","lastName":"User","location":"Virginia"}'
+
+
