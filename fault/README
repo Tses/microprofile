@@ -1,25 +1,16 @@
-curl -w"\n"  http://localhost:8080/hello/
-curl -w"\n"  http://localhost:8080/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
-
-
-
-curl -w"\n"  http://localhost:8083/hello/
-curl -w"\n"  http://localhost:8083/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
-curl -w"\n"  http://localhost:8083/metrics   -H "accept:application/json"
-
+#e=RuntimeException yes/no, t=miliseconds
 
 curl -w"\n"   "http://localhost:8084/status?e=0&t=0"
 curl -w"\n"   "http://localhost:8084/retry"
-
 curl -w"\n"   "http://localhost:8084/timeout"
-
-
 curl -w"\n"   "http://localhost:8084/fallback"
 
+curl -w"\n"   "http://localhost:8084/circuit"
+
+curl -w"\n"   "http://localhost:8084/bulkhead?async=0"
 curl -w"\n"   "http://localhost:8084/bulkhead?async=1"
 
 watch "curl -w"\n"   http://localhost:8084/circuit"
-
 
 export MP_Fault_Tolerance_NonFallback_Enabled=true
 

@@ -15,13 +15,10 @@ import gr.tses.hellothorntail.model.State;
 @ApplicationScoped
 @Path("/")
 
-
-
 public class HelloWorldEndpoint {
 
     @Inject
     State state;
-
 
     @Inject
     Helper helper;
@@ -32,8 +29,7 @@ public class HelloWorldEndpoint {
         state.setException(Integer.parseInt(exception));
         state.setTimeout(Integer.parseInt(timeout));
         return Response.ok("TimeOut:" + timeout + " Exception:" + exception).build();       
-    }
-    
+    }    
     
     @GET
     @Path("/retry")
@@ -46,7 +42,6 @@ public class HelloWorldEndpoint {
         return Response.ok("OK").build();       
     }
 
-
     @GET
     @Path("/timeout")
     public Response timout() throws InterruptedException {       
@@ -57,7 +52,6 @@ public class HelloWorldEndpoint {
         }        
         return Response.ok("OK").build();       
     }    
-
 
     @GET
     @Path("/fallback")
@@ -105,7 +99,4 @@ public class HelloWorldEndpoint {
         }        
         return Response.ok("OK " + s).build();       
     }    
-    
-
-
 }

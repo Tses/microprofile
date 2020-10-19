@@ -1,2 +1,5 @@
-curl -w"\n"  http://localhost:8080/hello/
-curl -w"\n"  http://localhost:8080/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
+curl -w"\n"  http://localhost:8081/hello/
+curl -w"\n"  http://localhost:8081/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
+
+export DFLT=C
+mvn package; java -jar target/helloconfig-thorntail.jar  -Ddflt=A

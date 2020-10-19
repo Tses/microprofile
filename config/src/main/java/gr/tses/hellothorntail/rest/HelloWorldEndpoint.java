@@ -36,11 +36,9 @@ public class HelloWorldEndpoint {
     @ConfigProperty(name = "test.myotherprop")
     private String myprop2;
 
-
     @Inject
     @ConfigProperty(name = "MY_OTHER")
     private String myprop3;    
-
 
     @Inject
     @ConfigProperty(name = "test.myperson")
@@ -49,8 +47,6 @@ public class HelloWorldEndpoint {
     @Inject
     @ConfigProperty(name = "DBP1")
     private String fakeDB;
-
-    
 
     @Inject
     private Config config;
@@ -65,6 +61,18 @@ public class HelloWorldEndpoint {
 
     @Context
     UriInfo uriInfo;
+
+
+    @Inject
+    @ConfigProperty(name = "dflt")
+    private String dflt;
+
+
+    @GET
+    @Path("dflt")
+    public String checkDefault (){
+        return dflt;
+    }
 
     @GET
     @Produces("text/plain")
@@ -92,14 +100,10 @@ public class HelloWorldEndpoint {
     }
 
     @POST
-
     @Path("/aloha")
-
     @Produces(MediaType.TEXT_PLAIN)
-
     @Consumes(MediaType.APPLICATION_JSON)
     public String hola(String json) {
-
         Person p = parser.parse(json);
         String hostname = servletRequest.getServerName();
         LOG.info(hostname);

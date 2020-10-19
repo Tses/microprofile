@@ -1,5 +1,7 @@
 package io.microprofile.showcase.rest;
 
+import java.util.Date;
+
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -44,8 +46,6 @@ public class Checker {
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-
-
     @RolesAllowed("Alumni")
     public String check(@Context SecurityContext securityContext){
 
@@ -58,17 +58,34 @@ public class Checker {
         return "OK";
     }
 
+    
     @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)    
     @Path("jwt")
     @RolesAllowed("Alumni")
+
+    
+
+    
+
+   
     public String getjwt(){
         
         org.eclipse.microprofile.jwt.JsonWebToken j = (JsonWebToken) securityContext.getUserPrincipal();
-
         System.out.println("isuer1" + j.getIssuer());
         System.out.println("isuer2" + issuer.getValue());
+        
+
+
+        
+        Date d = new Date(timeClaim * 1000);
+
+        System.out.println("token date:" + d);
+
 
         System.out.println("is user in role :" + securityContext.isUserInRole("Alumni") );        
+        
         
         return "OK";
     }
