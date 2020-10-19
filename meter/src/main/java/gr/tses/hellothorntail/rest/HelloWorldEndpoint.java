@@ -29,6 +29,7 @@ import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
@@ -37,8 +38,11 @@ import org.eclipse.microprofile.metrics.annotation.RegistryType;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.jboss.logging.Logger;
 
+
 import gr.tses.hellothorntail.model.Person;
 import gr.tses.hellothorntail.parser.PersonParser;
+import io.opentracing.tag.Tags;
+
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 
 @ApplicationScoped
@@ -93,7 +97,7 @@ public class HelloWorldEndpoint {
     Timer metricTimer;
 
     @Inject
-    @Metric(name = "metricMeter")
+    @Metric(name = "mymetricMeter",displayName = "A descritive name",absolute = true,description = "An meter",tags = {"xa=xo","xe=xo"})
     Meter metricMeter;
 
     @GET
@@ -115,8 +119,10 @@ public class HelloWorldEndpoint {
     public String histogram(@QueryParam("i") String i){
 
         if (!baseRegistry.getMetadata().containsKey("HistogramProgrammatic")) {
+            
             Metadata m = Metadata.builder().withName("HistogramProgrammatic").build();        
-            h = baseRegistry.histogram(m);            
+
+            h = baseRegistry.histogram(m,new Tag("takis","makis"),new Tag("sakis","lakis"));            
         }
         h.update(Integer.parseInt(i));
         return i;
@@ -125,7 +131,7 @@ public class HelloWorldEndpoint {
     @POST
     @Path("/aloha")
     @Produces(MediaType.TEXT_PLAIN)
-    @Counted(name = "hola-count")
+    @Counted(name = "hola-count",reusable = true)
     @Metered(name = "hola-metered")
     @Timed(name = "hola-timed")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -140,6 +146,18 @@ public class HelloWorldEndpoint {
         return String.format("Aloha mai %s %s from %s on %s", p.getFirstName(), p.getLastName(), p.getLocation(),
                 hostname);
     }
+
+
+    @POST
+    @Path("/ahola")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Counted(name = "hola-count",reusable = true)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String ahola(String json) {
+        
+        Person p = parser.parse(json);
+        
+        return String.format("Ahola mai %s %s from %s", p.getFirstName(), p.getLastName(), p.getLocation());   }    
 
     @PostConstruct
     private void init() {

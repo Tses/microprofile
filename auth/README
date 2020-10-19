@@ -1,7 +1,11 @@
 
+#Get Token
 curl  -H "Content-Type:application/json"   http://localhost:8080/authz -d '{ "username": "alumni", "password": "alumni-secret" }'|jq
 
 curl -H "Authorization: Bearer eyJr..." http://localhost:8080/api -v
 
+#Check Token
 curl -H "Authorization: Bearer eyJr..."  http://localhost:8080/api/jwt
 
+# Client of Check Token checker
+curl -w"\n"   http://localhost:8080/cli -v

@@ -22,15 +22,10 @@ import org.eclipse.microprofile.jwt.ClaimValue;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-//@DeclareRoles({"Alumni"})
-//@DenyAll
+@DeclareRoles({"Alumni"})
 
-
-//@ApplicationScoped
 @Path("/api")
 public class Checker {
-
-
 
     @Inject
     @Claim(standard=Claims.iss)
@@ -58,35 +53,20 @@ public class Checker {
         return "OK";
     }
 
-    
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)    
     @Path("jwt")
     @RolesAllowed("Alumni")
-
-    
-
-    
-
    
     public String getjwt(){
         
         org.eclipse.microprofile.jwt.JsonWebToken j = (JsonWebToken) securityContext.getUserPrincipal();
         System.out.println("isuer1" + j.getIssuer());
         System.out.println("isuer2" + issuer.getValue());
-        
-
-
-        
         Date d = new Date(timeClaim * 1000);
-
         System.out.println("token date:" + d);
-
-
-        System.out.println("is user in role :" + securityContext.isUserInRole("Alumni") );        
-        
-        
+        System.out.println("is user in role :" + securityContext.isUserInRole("Alumni") );                
         return "OK";
     }
 }

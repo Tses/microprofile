@@ -1,8 +1,10 @@
-curl -w"\n"  http://localhost:8080/hello/
-curl -w"\n"  http://localhost:8080/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
+curl -w"\n"  http://localhost:8083/hello/
+curl -w"\n"  http://localhost:8083/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
 
 
 
 curl -w"\n"  http://localhost:8083/hello/
 curl -w"\n"  http://localhost:8083/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
+curl -w"\n"  http://localhost:8083/hello/ahola -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
+
 curl -w"\n"  http://localhost:8083/metrics   -H "accept:application/json"
