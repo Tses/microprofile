@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -17,12 +18,16 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.Histogram;
+import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Counted;
@@ -39,8 +44,6 @@ import org.eclipse.microprofile.metrics.annotation.Gauge;
 @ApplicationScoped
 @Path("/hello")
 
-
-
 public class HelloWorldEndpoint {
 
     @Inject
@@ -51,11 +54,9 @@ public class HelloWorldEndpoint {
     @ConfigProperty(name = "test.myotherprop")
     private String myprop2;
 
-
     @Inject
     @ConfigProperty(name = "MY_OTHER")
-    private String myprop3;    
-
+    private String myprop3;
 
     // @Inject
     // @ConfigProperty(name = "test.myperson")
@@ -64,8 +65,6 @@ public class HelloWorldEndpoint {
     // @Inject
     // @ConfigProperty(name = "DBP1")
     // private String fakeDB;
-
-    
 
     @Inject
     private Config config;
@@ -81,59 +80,60 @@ public class HelloWorldEndpoint {
     @Context
     UriInfo uriInfo;
 
-    
     @Inject
-    @RegistryType(type=MetricRegistry.Type.APPLICATION)
+    @RegistryType(type = MetricRegistry.Type.APPLICATION)
     MetricRegistry baseRegistry;
 
     @Inject
     @Metric(name = "metricCounter")
     Counter metricCounter;
-    
+
     @Inject
     @Metric(name = "metricTimer")
     Timer metricTimer;
-    
+
     @Inject
     @Metric(name = "metricMeter")
     Meter metricMeter;
-
-
 
     @GET
     @Produces("text/plain")
     public Response doGet() throws InterruptedException {
 
-        
         metricCounter.inc();
         metricMeter.mark();
-
-        Timer.Context context =  metricTimer.time();
-
-       
-        
+        Timer.Context context = metricTimer.time();
         Thread.sleep((new Random()).nextInt(1000));
-
         context.close();
+        return Response.ok("Hello from Thorntails! ->" + " props:" + myprop1 + "," + myprop2 + " " + myprop3).build();
+    }
 
-        return Response.ok("Hello from Thorntails! ->"  + " props:" + myprop1 + "," + myprop2 + " " + myprop3).build();
+    Histogram h;
+    @GET
+    @Path("/hist")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String histogram(@QueryParam("i") String i){
+
+        if (!baseRegistry.getMetadata().containsKey("HistogramProgrammatic")) {
+            Metadata m = Metadata.builder().withName("HistogramProgrammatic").build();        
+            h = baseRegistry.histogram(m);            
+        }
+        h.update(Integer.parseInt(i));
+        return i;
     }
 
     @POST
-
     @Path("/aloha")
-
     @Produces(MediaType.TEXT_PLAIN)
-
     @Counted(name = "hola-count")
     @Metered(name = "hola-metered")
     @Timed(name = "hola-timed")
-
-    
-    
     @Consumes(MediaType.APPLICATION_JSON)
     public String hola(String json) {
 
+        Metadata counterMetadata = Metadata.builder().withName("Programmatic").build();
+        Counter counter = baseRegistry.counter(counterMetadata);
+        counter.inc();
         Person p = parser.parse(json);
         String hostname = servletRequest.getServerName();
         LOG.info(hostname);
@@ -146,14 +146,10 @@ public class HelloWorldEndpoint {
         LOG.info("AlohaResource created!");
     }
 
-
-
-    @Gauge
-    (unit = MetricUnits.NONE)
-    public Integer  getColor(){
-
+    @Gauge(unit = MetricUnits.NONE)
+    public Integer getColor() {
         System.out.println("Calculates color");
-        return         121;
+        return 121;
     }
 
 }

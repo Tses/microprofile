@@ -5,6 +5,7 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.print.attribute.standard.MediaTray;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,13 +15,31 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
-@DeclareRoles({"Alumni"})
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.ClaimValue;
+import org.eclipse.microprofile.jwt.Claims;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
+//@DeclareRoles({"Alumni"})
 //@DenyAll
-@ApplicationScoped
+
+
+//@ApplicationScoped
 @Path("/api")
 public class Checker {
-    
 
+
+
+    @Inject
+    @Claim(standard=Claims.iss)
+    private ClaimValue<String>issuer;
+
+    @Inject
+    @Claim(value="exp",standard=Claims.iat)
+    private Long timeClaim;
+    
+    @Context
+    SecurityContext securityContext;
 
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -31,6 +50,26 @@ public class Checker {
     public String check(@Context SecurityContext securityContext){
 
         System.out.println("jwt:" + securityContext.getUserPrincipal());
+        return "OK";
+    }
+    @Path("check")
+    @RolesAllowed("Alumni")
+    public String check(){
+        return "OK";
+    }
+
+    @GET
+    @Path("jwt")
+    @RolesAllowed("Alumni")
+    public String getjwt(){
+        
+        org.eclipse.microprofile.jwt.JsonWebToken j = (JsonWebToken) securityContext.getUserPrincipal();
+
+        System.out.println("isuer1" + j.getIssuer());
+        System.out.println("isuer2" + issuer.getValue());
+
+        System.out.println("is user in role :" + securityContext.isUserInRole("Alumni") );        
+        
         return "OK";
     }
 }
