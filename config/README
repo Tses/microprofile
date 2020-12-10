@@ -1,5 +1,17 @@
 curl -w"\n"  http://localhost:8081/hello/
-curl -w"\n"  http://localhost:8081/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
+mvn package; java -jar target/helloconfig-thorntail.jar
 
-export DFLT=C
-mvn package; java -jar target/helloconfig-thorntail.jar  -Ddflt=A
+
+@Inject
+@ConfigProperty(name = "myprop1")
+private String myprop1;
+mvn package; java -jar target/helloconfig-thorntail.jar
+
+myprop1=Hello From config.properties
+
+export MYPROP1="Hello from env"
+
+java -jar target/helloconfig-thorntail.jar  -Dmyprop1="Hello from system property"       
+
+
+converter -> test.myperson: '{"firstName":"Test","lastName":"User","location":"Virginia"}'

@@ -15,7 +15,6 @@ thorntail:
       handlers:
       - CONSOLE
       - FILE
-test.myprop: abc
-test.myperson: '{"firstName":"Test","lastName":"User","location":"Virginia"}'
+
 
 
