@@ -1,4 +1,13 @@
+mvn package; 
+java   -jar ./target/hellofault-thorntail.jar
+
+curl -sSw"\n"   "http://localhost:8084/health"|jq
+
+
+
 #e=RuntimeException yes/no, t=miliseconds
+
+
 
 curl -w"\n"   "http://localhost:8084/status?e=0&t=0"
 curl -w"\n"   "http://localhost:8084/retry"
@@ -10,7 +19,17 @@ curl -w"\n"   "http://localhost:8084/circuit"
 curl -w"\n"   "http://localhost:8084/bulkhead?async=0"
 curl -w"\n"   "http://localhost:8084/bulkhead?async=1"
 
-watch "curl -w"\n"   http://localhost:8084/circuit"
+#{ curl -w"\n"   "http://localhost:8084/bulkhead?async=0"  & disown; } 2>/dev/null;
+
+{ curl -w"\n"   "http://localhost:8084/bulkhead?async=0" 1>> temp  & disown; } 2>/dev/null;
+
+tail -f temp
+
+
+# curl -w"\n"   "http://localhost:8084/bulkhead?async=1" 2>/dev/null 1>> temp &
+
+
+watch "curl -sSw"\n"   http://localhost:8084/circuit"
 
 export MP_Fault_Tolerance_NonFallback_Enabled=true
 

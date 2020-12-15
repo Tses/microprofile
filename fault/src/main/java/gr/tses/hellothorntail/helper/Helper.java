@@ -25,13 +25,13 @@ public class Helper {
     State state;
 
     @Retry(maxRetries = 5, delay = 1000, retryOn = { RuntimeException.class })
-    public void callRetry() throws InterruptedException {
-        state.call();
+    public String callRetry() throws InterruptedException {
+        return state.call();
     }
 
     @Timeout(value = 1000)
-    public void callTimeout() throws InterruptedException {
-        state.call();
+    public String callTimeout() throws InterruptedException {
+        return state.call();
     }
 
     @Timeout(value = 1000)
@@ -42,7 +42,7 @@ public class Helper {
     }
 
     private String fallback() throws InterruptedException {
-        return "Static Response from fallback";
+        return "Overloaded !!!!!!!!!";
     }
 
     @Bulkhead(value = 3)
@@ -52,18 +52,18 @@ public class Helper {
     }
 
     @Asynchronous()
-    @Bulkhead(value = 5, waitingTaskQueue = 5)
+    @Bulkhead(value = 3, waitingTaskQueue = 4)
     @Fallback(fallbackMethod = "fallbackAsync")
     public Future<String> serviceA() throws InterruptedException {      
         return CompletableFuture.completedFuture(state.call());
     }
 
     private Future<String> fallbackAsync() throws InterruptedException {
-        return CompletableFuture.completedFuture("Static Response from fallbackAsync");
+        return CompletableFuture.completedFuture("Overloaded !!!!!!!!!");
     }
 
 
-    @CircuitBreaker(requestVolumeThreshold = 4, failureRatio = 0.5, delay = 20000)
+    @CircuitBreaker(requestVolumeThreshold = 20, failureRatio = 0.3, delay = 20000)
     @Fallback(fallbackMethod = "fallbackCirtuitOpen",applyOn = CircuitBreakerOpenException.class)
     public String callCircuit() throws InterruptedException {
         return state.call();

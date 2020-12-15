@@ -34,23 +34,25 @@ public class HelloWorldEndpoint {
     @GET
     @Path("/retry")
     public Response retry() throws InterruptedException {       
+        String s;
         try {
-            helper.callRetry();    
+            s = helper.callRetry();    
         } catch (Exception e) {
             return Response.status(500).entity("NOT OK").build();           
         }        
-        return Response.ok("OK").build();       
+        return Response.ok("OK " + s).build();            
     }
 
     @GET
     @Path("/timeout")
     public Response timout() throws InterruptedException {       
+        String s;
         try {
-            helper.callTimeout();    
+            s = helper.callTimeout();    
         } catch (Exception e) {
             return Response.status(500).entity("NOT OK").build();           
         }        
-        return Response.ok("OK").build();       
+        return Response.ok("OK " + s).build();       
     }    
 
     @GET
@@ -72,8 +74,7 @@ public class HelloWorldEndpoint {
         try {
             if ("1".equals(async)){
                 Future<String> f  = helper.serviceA();  
-                System.out.println("Waiting fake process to complete ...");
-                
+                System.out.println("Waiting fake process to complete ...");              
                 // while(!f.isDone()) {                    
                 //     Thread.sleep(100);
                 // }

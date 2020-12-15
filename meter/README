@@ -1,4 +1,10 @@
+mvn package; java -jar target/helloconfig-thorntail.jar
+
+java -jar target/hellometer-thorntail.jar
+
 curl -w"\n"  http://localhost:8083/hello/
+
+
 curl -w"\n"  http://localhost:8083/hello/aloha -d '{"firstName":"Test","lastName":"User","location":"Virginia"}'  -H "content-type:application/json"
 
 
