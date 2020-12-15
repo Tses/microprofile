@@ -50,28 +50,9 @@ import org.eclipse.microprofile.metrics.annotation.Gauge;
 
 public class HelloWorldEndpoint {
 
-    @Inject
-    @ConfigProperty(name = "test.myprop")
-    private String myprop1;
+ 
 
-    @Inject
-    @ConfigProperty(name = "test.myotherprop")
-    private String myprop2;
-
-    @Inject
-    @ConfigProperty(name = "MY_OTHER")
-    private String myprop3;
-
-    // @Inject
-    // @ConfigProperty(name = "test.myperson")
-    // private Person myPerson;
-
-    // @Inject
-    // @ConfigProperty(name = "DBP1")
-    // private String fakeDB;
-
-    @Inject
-    private Config config;
+   
 
     @Inject
     private PersonParser parser;
@@ -89,15 +70,16 @@ public class HelloWorldEndpoint {
     MetricRegistry baseRegistry;
 
     @Inject
-    @Metric(name = "metricCounter")
+    @Metric(name = "helloCounter",absolute = true)
     Counter metricCounter;
 
     @Inject
-    @Metric(name = "metricTimer")
+    @Metric(name = "helloTimer",absolute = true,unit = MetricUnits.SECONDS)
     Timer metricTimer;
 
     @Inject
-    @Metric(name = "mymetricMeter",displayName = "A descritive name",absolute = true,description = "An meter",tags = {"xa=xo","xe=xo"})
+    @Metric(name = "helloMeter",displayName = "A descriptive name",absolute = true,description = "A hello meter")
+    //@Metric(name = "helloMeter",displayName = "A descriptive name",absolute = true,description = "A hello meter",tags = {"micro=profile","uni=systems"})
     Meter metricMeter;
 
     @GET
@@ -109,7 +91,7 @@ public class HelloWorldEndpoint {
         Timer.Context context = metricTimer.time();
         Thread.sleep((new Random()).nextInt(1000));
         context.close();
-        return Response.ok("Hello from Thorntails! ->" + " props:" + myprop1 + "," + myprop2 + " " + myprop3).build();
+        return Response.ok("Hello from Microprofile !").build();
     }
 
     Histogram h;
@@ -122,7 +104,8 @@ public class HelloWorldEndpoint {
             
             Metadata m = Metadata.builder().withName("HistogramProgrammatic").build();        
 
-            h = baseRegistry.histogram(m,new Tag("takis","makis"),new Tag("sakis","lakis"));            
+            //h = baseRegistry.histogram(m,new Tag("mysuper","histogrammetric"),new Tag("amicroprofile","helloworld"));            
+            h = baseRegistry.histogram(m);            
         }
         h.update(Integer.parseInt(i));
         return i;
@@ -131,15 +114,14 @@ public class HelloWorldEndpoint {
     @POST
     @Path("/aloha")
     @Produces(MediaType.TEXT_PLAIN)
-    @Counted(name = "hola-count",reusable = true)
-    @Metered(name = "hola-metered")
-    @Timed(name = "hola-timed")
+    @Counted(name = "hola-count",reusable = true,absolute = true)
+    @Metered(name = "hola-metered",absolute = true)
+    @Timed(name = "hola-timed",absolute = true,unit = MetricUnits.SECONDS)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String hola(String json) {
+    public String hola(String json)  throws InterruptedException{
 
-        Metadata counterMetadata = Metadata.builder().withName("Programmatic").build();
-        Counter counter = baseRegistry.counter(counterMetadata);
-        counter.inc();
+        Thread.sleep((new Random()).nextInt(1000));
+
         Person p = parser.parse(json);
         String hostname = servletRequest.getServerName();
         LOG.info(hostname);
@@ -151,7 +133,7 @@ public class HelloWorldEndpoint {
     @POST
     @Path("/ahola")
     @Produces(MediaType.TEXT_PLAIN)
-    @Counted(name = "hola-count",reusable = true)
+    //@Counted(name = "hola-count",reusable = true,absolute = true)
     @Consumes(MediaType.APPLICATION_JSON)
     public String ahola(String json) {
         
@@ -164,10 +146,10 @@ public class HelloWorldEndpoint {
         LOG.info("AlohaResource created!");
     }
 
-    @Gauge(unit = MetricUnits.NONE)
-    public Integer getColor() {
-        System.out.println("Calculates color");
-        return 121;
+    @Gauge(unit = MetricUnits.NONE,absolute = true)
+    public Integer getGauge() {
+        return (new Random()).nextInt(1000);
+        
     }
 
 }
